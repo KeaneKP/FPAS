@@ -1,21 +1,21 @@
 const update = () => {
-  if (dPressed) {
+  if (pressed["d"]) {
     player.dx = player.speed
-  } else if (aPressed) {
+  } else if (pressed["a"]) {
     player.dx = -player.speed
   } else {
     player.dx = 0;
   }
-  if (wPressed) {
+  if (pressed["w"]) {
     player.dy = -player.speed
-  } else if (sPressed) {
+  } else if (pressed["s"]) {
     player.dy = player.speed
   } else {
     player.dy = 0;
   }
-  if (leftPressed) {
+  if (pressed["ArrowLeft"]) {
     shoot(-12);
-  } else if (rightPressed) {
+  } else if (pressed["ArrowRight"]) {
     shoot(12);
   }
   if (player.dx != 0 || player.dy != 0) {

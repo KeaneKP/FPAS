@@ -20,87 +20,10 @@ player.points = 20;
 player.atks = 1;
 player.speed = 5;
 
-document.addEventListener('keydown', keyDownHandler, false);
-document.addEventListener('keyup', keyUpHandler, false);
-
-let wPressed = false;
-let sPressed = false;
-let dPressed = false;
-let aPressed = false;
-let leftPressed = false;
-let rightPressed = false;
-let onePressed = false;
-let twoPressed = false;
-let threePressed = false;
-let fourPressed = false;
-let fivePressed = false;
-let sixPressed = false;
-function keyDownHandler(event) {
-  if (event.keyCode == 83) {
-    sPressed = true;
-  }
-  else if (event.keyCode == 87) {
-    wPressed = true;
-  }
-  if (event.keyCode == 65) {
-    aPressed = true;
-  } else if (event.keyCode == 68) {
-    dPressed = true;
-  }
-  if (event.keyCode == 37) {
-    leftPressed = true;
-  }
-  if (event.keyCode == 39) {
-    rightPressed = true;
-  }
-  if (event.keyCode == 49 && !onePressed) {
-    onePressed==true;
-    buy(player.dmg, 1, (player.dmg + 1) * 200)
-  }
-  if (event.keyCode == 50 && !twoPressed) {
-    twoPressed==true;
-    buy(player.atks, 1, (player.atks + 1) * 200)
-  }
-  if (event.keyCode == 51 && !threePressed && player.points >= -5000) {
-    threePressed=true;
-    buy(player.speed, 1, player.speed * 200 - 550)
-  }
-  if (event.keycode == 52 && !fourPressed && player.points >= 0 && player.hp < 5) {
-    fourPressed==true;
-    buy(player.hp, 1, 500+healMod)
-    healMod += 200;
-  }
-}
-function keyUpHandler(event) {
-  if (event.keyCode == 83) {
-    sPressed = false;
-  } else if (event.keyCode == 87) {
-    wPressed = false;
-  }
-  if (event.keyCode == 65) {
-    aPressed = false;
-  } else if (event.keyCode == 68) {
-    dPressed = false;
-  }
-  if (event.keyCode == 37) {
-    leftPressed = false;
-  }
-  if (event.keyCode == 39) {
-    rightPressed = false;
-  }
-  if (event.keyCode == 49) {
-    onePressed = false;
-  }
-  if (event.keyCode == 50) {
-    twoPressed = false;
-  }
-  if (event.keyCode == 51) {
-    threePressed = false;
-  }
-  if (event.keyCode == 52) {
-    fourdaPressed = false;
-  }
-}
+let pressed = {};
+['keydown', 'keyup'].forEach(type => document.addEventListener(
+	type, event => pressed[event.key] = type == 'keydown', false
+));
 
 const shoot = (speed) => {
   if (!hasShot && player.points >= Math.ceil(2.5 * player.dmg)) {
