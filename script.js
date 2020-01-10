@@ -74,7 +74,6 @@ let pressed = {};
 	},
 	false
 ));
-
 const shoot = (speed) => {
   if (!hasShot && player.points >= Math.ceil(2.5 * player.dmg)) {
     bullets.push(new bulletPref(player.x + player.w / 2 - 2.5, player.y + player.h / 2 - 2.5, speed));
