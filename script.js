@@ -55,11 +55,11 @@ function keyDownHandler(event) {
   }
   if (event.keyCode == 49 && !onePressed) {
     onePressed==true;
-    buy(player.dmg, 1, (2* player.dmg + 2) * 100;)
+    buy(player.dmg, 1, (player.dmg + 1) * 200)
   }
   if (event.keyCode == 50 && !twoPressed) {
     twoPressed==true;
-    buy(player.atks, 1, (2* player.atks + 2) * 100;)
+    buy(player.atks, 1, (player.atks + 1) * 200)
   }
   if (event.keyCode == 51 && !threePressed && player.points >= -5000) {
     threePressed=true;
