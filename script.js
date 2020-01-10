@@ -55,24 +55,20 @@ function keyDownHandler(event) {
   }
   if (event.keyCode == 49 && !onePressed) {
     onePressed==true;
-    player.points -= (2* player.dmg + 2) * 100;
-    player.dmg++;
+    buy(player.dmg, 1, (2* player.dmg + 2) * 100;)
   }
   if (event.keyCode == 50 && !twoPressed) {
     twoPressed==true;
-    player.points -= (2* player.atks + 2) * 100;
-    player.atks++;
+    buy(player.atks, 1, (2* player.atks + 2) * 100;)
   }
   if (event.keyCode == 51 && !threePressed && player.points >= -5000) {
     threePressed=true;
-    player.speed++;
-    player.points -= player.speed * 200 - 550;
+    buy(player.speed, 1, player.speed * 200 - 550)
   }
   if (event.keycode == 52 && !fourPressed && player.points >= 0 && player.hp < 5) {
     fourPressed==true;
-    player.points -= 500 + healMod;
+    buy(player.hp, 1, 500+healMod)
     healMod += 200;
-    player.hp++;
   }
 }
 function keyUpHandler(event) {
@@ -186,5 +182,9 @@ function enemyPref(x, y) {
       this.dy = -3;
     }
   }
+}
+const buy = (stat, statIncrease, price) => {
+  stat += statIncrease;
+  player.points -= price;
 }
 setInterval(() => { update(); draw(); }, 1000 / 60);
