@@ -3,7 +3,6 @@ let bullets = [];
 let enemies = []
 let moveCosting = 0;
 let hasShot = false;
-let healMod = 0;
 function component(x, y, dx, dy, h, w) {
   this.x = x;
   this.y = y;
@@ -20,9 +19,60 @@ player.points = 20;
 player.atks = 1;
 player.speed = 5;
 
+const upgradeKeys = {
+	"1": {
+		stat: "dmg",
+		displayName: "ATK Damage",
+		statBoost: 1,
+		price: 600,
+		priceIncrease: 200,
+	},
+	"2": {
+		stat: "atks",
+		displayName: "ATK Speed",
+		statBoost: 1,
+		price: 400,
+		priceIncrease: 200,
+	},
+	"3": {
+		stat: "speed",
+		displayName: "Speed",
+		statBoost: 1,
+		requirement: player => player.points >= -5000,
+		price: 450,
+		priceIncrease: 200,
+	},
+	"4": {
+		stat: "hp",
+		displayName: "Heal",
+		statBoost: 1,
+		requirement: player => player.points >= 0 && player.hp < 5,
+		price: 500,
+		priceIncrease: 200,
+	}
+};
+
 let pressed = {};
 ['keydown', 'keyup'].forEach(type => document.addEventListener(
-	type, event => pressed[event.key] = type == 'keydown', false
+	type,
+	event => {
+		let upgrade = upgradeKeys[event.key];
+
+		if (!event.repeat && upgrade !== undefined) {
+			// if this upgrade has no requirement or it does and the requirement is met,
+			if (upgrade.requirement == undefined || upgrade.requirement(player)) {
+				// increase the player's stat
+				player[upgrade.stat] += upgrade.statBoost;
+				// take away their monies
+				player.points -= upgrade.price;
+				// increase price of upgrade
+				upgrade.price += upgrade.priceIncrease;
+			}
+		}
+		
+		return pressed[event.key] = type == 'keydown';
+	},
+	false
 ));
 
 const shoot = (speed) => {
@@ -105,9 +155,5 @@ function enemyPref(x, y) {
       this.dy = -3;
     }
   }
-}
-const buy = (stat, statIncrease, price) => {
-  stat += statIncrease;
-  player.points -= price;
 }
 setInterval(() => { update(); draw(); }, 1000 / 60);
