@@ -21,11 +21,11 @@ const draw = () => {
   ctx.fillStyle = 'red'
   ctx.fillText("Shop:", 620, 40);
   ctx.font = ctx.font = "15px Monospace"
-  ctx.fillText("1. ATK Damage: " + (2 * player.dmg + 2) * 100, 620, 70);
-  ctx.fillText("2. ATK Speed: " + (2 * player.atks + 2) * 100, 620, 90);
-  ctx.fillText("4. Heal: " + (500 + healMod), 620, 130);
+  ctx.fillText("1. ATK Damage: " + upgradeKeys["1"].price, 620, 70);
+  ctx.fillText("2. ATK Speed: " + upgradeKeys["2"].price, 620, 90);
+  ctx.fillText("4. Heal: " + upgradeKeys["3"].price, 620, 130);
   ctx.fillText("Press the number key", 615, 150);
   ctx.fillText("of the item you wish", 615, 170);
-  ctx.fillText("3. Speed: " + ((2 * player.speed + 2) * 100 - 550), 620, 110);
+  ctx.fillText("3. Speed: " + upgradeKeys["4"].price, 620, 110);
   ctx.fillText("to purchase", 615, 190);
 }

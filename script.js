@@ -20,58 +20,58 @@ player.points = 20;
 player.atks = 1;
 player.speed = 5;
 const upgradeKeys = {
-    "1": {
-        stat: "dmg",
-        increase: 1,
-        nextValue: current => (current + 1) * 200,
-    },
-    "2": {
-        stat: "atks",
-        increase: 1,
-        nextValue: current => (current + 1) * 200,
-    },
-    "3": {
-        stat: "speed",
-        increase: 1,
-        requirement: player => player.points >= -5000,
-        nextValue: current => current * 200 - 550
-    },
-    "4": {
-        stat: "hp",
-        increase: 1,
-        requirement: player => player.points >= 0 && player.hp < 5,
-        nextValue: (() => {
-            let healMod = 0;
-            return current => {
-                let output = 500 + healMod;
-                healMod += 200;
-                return output;
-            };
-        })(),
-    }
+  "1": {
+    stat: "dmg",
+    increase: 1,
+    price: 600,
+    priceIncrease: 200
+  },
+  "2": {
+    stat: "atks",
+    increase: 1,
+    price: 400,
+    priceIncrease: 200
+  },
+  "3": {
+    stat: "speed",
+    increase: .5,
+    requirement: player => player.points >= -5000,
+    price: 650,
+    priceIncrease: 200
+  },
+  "4": {
+    stat: "hp",
+    increase: 1,
+    requirement: player => player.points >= 0 && player.hp < 5,
+    price: 500,
+    priceIncrease: 200
+  }
 };
 let pressed = {};
 ['keydown', 'keyup'].forEach(type => document.addEventListener(
-    type,
-    event => {
-        let upgrade = upgradeKeys[event.key];
-        if (!event.repeat && upgrade !== undefined) {
-            // if this upgrade has no requirement or it does and the requirement is met,
-            if (upgrade.requirement == undefined || upgrade.requirement(player)) {
-                let stat = player[upgrade.stat];
-                buy(stat, upgrade.increase, upgrade.nextPrice(stat));
-            }
+  type,
+  event => {
+    let upgrade = upgradeKeys[event.key];
+    if (!event.repeat && upgrade !== undefined) {
+      // if this upgrade has no requirement or it does and the requirement is met,
+      if (upgrade.requirement == undefined || upgrade.requirement(player)) {
+        if (type == 'keydown') {
+          player[upgrade.stat] += upgrade.increase;
+          player.points -= upgrade.price;
+          upgrade.price += upgrade.priceIncrease;
         }
-        
-        return pressed[event.key] = type == 'keydown';
-    },
-    false
+      }
+    }
+
+    return pressed[event.key] = type == 'keydown';
+  },
+  false
 ));
 const shoot = (speed) => {
   if (!hasShot && player.points >= Math.ceil(2.5 * player.dmg)) {
     bullets.push(new bulletPref(player.x + player.w / 2 - 2.5, player.y + player.h / 2 - 2.5, speed));
     hasShot = true;
-    setTimeout(() => { hasShot = false }, 110 - (10*player.atks));
+    setTimeout(() => { hasShot = false }, 110 - (10 * player.atks));
     player.points -= Math.ceil(2.5 * player.dmg);
   }
 }
@@ -116,7 +116,7 @@ function enemyPref(x, y) {
       if (bullet.x > this.x && bullet.x < this.x + this.w && bullet.y > this.y && bullet.y < this.y + this.h) {
         this.hp -= player.dmg;
         bullet.active = false;
-        player.points+=10;
+        player.points += 10;
       }
     })
     if (this.x > player.x - 5 && this.x < player.x + player.w + 5 && this.y > player.y - 5 && this.y < player.y + player.h + 5) {
@@ -130,7 +130,7 @@ function enemyPref(x, y) {
     }
     if (this.hp <= 0) {
       this.active = false;
-      player.points+=100
+      player.points += 100
     }
     if (Math.abs(player.x - this.x) < 7) {
       this.dx = 0;
