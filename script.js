@@ -19,6 +19,7 @@ player.hp = 5;
 player.points = 20;
 player.atks = 1;
 player.speed = 5;
+player.onGround = false;
 const upgradeKeys = {
   "1": {
     stat: "dmg",
@@ -89,7 +90,7 @@ function bulletPref(x, y, dx) {
   this.update = () => {
     this.x += this.dx;
     this.y += this.dy;
-    if (this.x > cvs.width || this.x < 0) {
+    if (this.x > 600 || this.x < 0) {
       this.active = false;
     }
   }
@@ -106,8 +107,10 @@ function enemyPref(x, y) {
   this.draw = () => {
     ctx.fillStyle = 'black';
     ctx.fillRect(this.x, this.y, this.w, this.h);
+    if (this.hp < 20) {
     ctx.fillStyle = 'red';
-    ctx.fillRect(this.x, this.y - 10, this.hp * (this.w / 20), 5);
+      ctx.fillRect(this.x, this.y - 10, this.hp * (this.w / 20), 5);
+    }
   }
   this.update = () => {
     this.x += this.dx;
@@ -152,4 +155,23 @@ const buy = (stat, statIncrease, price) => {
   stat += statIncrease;
   player.points -= price;
 }
+function platform(x, y, w, h, color) {
+  this.x = x;
+  this.y = y;
+  this.w = w;
+  this.h = h;
+  this.color = color;
+  this.draw = () => {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x, this.y, this.w, this.h)
+    ctx.strokeRect(this.x, this.y, this.w, this.h)
+  }
+  this.update = () => {
+    if (player.y + player.h > this.y - 5 && player.y + player.h < this.y) {
+      player.onGround = true;
+    }
+  }
+}
+const ground = [];
+ground.push(new platform(0, 550, 600, 50, 'brown'))
 setInterval(() => { update(); draw(); }, 1000 / 60);

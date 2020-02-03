@@ -1,14 +1,21 @@
 const update = () => {
-  if (pressed["a"]) {
-    player.dx = -player.speed;
-  } else if (pressed["d"]) {
-    player.dx = player.speed;
+  if (pressed["d"]) {
+    player.dx = player.speed
+  } else if (pressed["a"]) {
+    player.dx = -player.speed
+  } else {
+    player.dx = 0;
   }
   
   if (pressed["ArrowLeft"]) {
     shoot(-12);
   } else if (pressed["ArrowRight"]) {
     shoot(12);
+  }
+  if (!player.onGround) {
+    player.dy += .1;
+  } else {
+    player.dy = 0;
   }
   if (player.dx != 0 || player.dy != 0) {
     moveCosting += .005 * player.speed;
