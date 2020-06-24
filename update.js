@@ -1,7 +1,10 @@
 const update = () => {
-  if (pressed["d"]) {
+  player.onGround = false;
+  ground.forEach(ground => { ground.update() })
+  test.innerHTML = player.jumps;
+  if (pressed["d"] && player.x + player.w < 600) {
     player.dx = player.speed
-  } else if (pressed["a"]) {
+  } else if (pressed["a"] && player.x > 0) {
     player.dx = -player.speed
   } else {
     player.dx = 0;
@@ -12,10 +15,17 @@ const update = () => {
   } else if (pressed["ArrowRight"]) {
     shoot(12);
   }
+  if (pressed["s"]) {
+    player.dy += .3;
+  }
   if (!player.onGround) {
     player.dy += .1;
   } else {
     player.dy = 0;
+    player.jumps = player.maxJumps;
+  }
+  if (player.y > 550 - player.h) {
+    player.y = 550 - player.h;
   }
   if (player.dx != 0 || player.dy != 0) {
     moveCosting += .005 * player.speed;
@@ -24,39 +34,28 @@ const update = () => {
       player.points--;
     }
   }
+  //if (player.x > 0 && player.x + player.w < 600) {
   player.x += player.dx;
-  player.y += player.dy;
-  bullets.forEach((bullet) => { bullet.update() })
-  bullets = bullets.filter((bullet) => { return bullet.active });
-  enemies.forEach((enemy) => { enemy.update() })
-  enemies = enemies.filter((enemy) => { return enemy.active });
-  let rand = Math.floor(Math.random() * 750)
-  if (rand == 1) {
-    enemies.push(new enemyPref(0, 0));
-  } else if (rand == 2) {
-    enemies.push(new enemyPref(600, 0));
-  } else if (rand == 3) {
-    enemies.push(new enemyPref(0, 600));
-  } else if (rand == 4) {
-    enemies.push(new enemyPref(600, 600));
+  if (player.dy > 0 || player.y > 0) {
+    player.y += player.dy;
+  } else {
+    player.dy *= -.5;
   }
-  if (rand > 700 && player.dy == 0 && player.dx == 0) {
+  bullets.forEach(bullet => { bullet.update() })
+  bullets = bullets.filter((bullet) => { return bullet.active });
+  enemies.forEach(enemy => { enemy.update() })
+  enemies = enemies.filter((enemy) => { return enemy.active });
+  let rand = Math.random() * 100
+  if (rand < 0.25) {
+    enemies.push(new enemyPref(0, 0));
+  } else if (rand < 0.5) {
+    enemies.push(new enemyPref(600, 0));
+  }
+  if (rand > 98.3 && player.dy === 0 && player.dx === 0) {
     player.points++;
   }
   if (player.hp <= 0) {
-    player.points = 20;
-    player.hp = 5;
-    enemies = [];
-    player.x = 290;
-    player.y = 290;
-    player.atks = 1;
-    player.dmg = 2;
-    player.speed = 5;
-    healMod = 0;
-    upgradeKeys["1"].price = 600
-    upgradeKeys["2"].price = 400
-    upgradeKeys["3"].price = 650
-    upgradeKeys["4"].price = 500
+    spawn()
   }
   //player.hp += 0.0007
 }

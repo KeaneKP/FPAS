@@ -1,6 +1,6 @@
 const ctx = cvs.getContext("2d");
 let bullets = [];
-let enemies = []
+let enemies = [];
 let moveCosting = 0;
 let hasShot = false;
 let healMod = 0;
@@ -13,12 +13,15 @@ function component(x, y, dx, dy, h, w) {
   this.w = w;
 }
 
-const player = new component(290, 290, 0, 0, 20, 20);
+const player = new component(290, 350, 0, 0, 20, 20);
 player.dmg = 2;
-player.hp = 5;
-player.points = 20;
+player.maxhp = 5;
+player.hp = player.maxhp;
+player.points = 50;
 player.atks = 1;
 player.speed = 5;
+player.maxJumps = 0;
+player.jumps = player.maxJumps;
 player.onGround = false;
 const upgradeKeys = {
   "1": {
@@ -43,9 +46,21 @@ const upgradeKeys = {
   "4": {
     stat: "hp",
     increase: 1,
-    requirement: player => player.points >= 0 && player.hp < 5,
+    requirement: player => player.points >= 0 && player.hp < player.maxhp,
     price: 500,
     priceIncrease: 200
+  },
+  "5": {
+    stat: "maxhp",
+    increase: 1,
+    price: 500,
+    priceIncrease: 300
+  },
+  "6": {
+    stat: "maxJumps",
+    increase: 1,
+    price: 750,
+    priceIncrease: 500
   }
 };
 let pressed = {};
@@ -63,7 +78,9 @@ let pressed = {};
         }
       }
     }
-
+    if (event.key == 'w' && type == 'keydown') {
+      jump(false);
+    }
     return pressed[event.key] = type == 'keydown';
   },
   false
@@ -74,6 +91,16 @@ const shoot = (speed) => {
     hasShot = true;
     setTimeout(() => { hasShot = false }, 110 - (10 * player.atks));
     player.points -= Math.ceil(2.5 * player.dmg);
+  }
+}
+const jump = (enemyHit) => { // search: jumpf
+  if (player.onGround || enemyHit || player.x < 10 || player.x > 590 - player.w || player.jumps > 0) {
+    if (!player.onGround && player.x > 10 && player.x <  590 - player.w ) {
+      player.jumps--;
+    }
+    player.y -= 5;
+    player.onGround = false;
+    player.dy = -5;
   }
 }
 function bulletPref(x, y, dx) {
@@ -108,7 +135,6 @@ function enemyPref(x, y) {
     ctx.fillStyle = 'black';
     ctx.fillRect(this.x, this.y, this.w, this.h);
     if (this.hp < 20) {
-    ctx.fillStyle = 'red';
       ctx.fillRect(this.x, this.y - 10, this.hp * (this.w / 20), 5);
     }
   }
@@ -119,17 +145,20 @@ function enemyPref(x, y) {
       if (bullet.x > this.x && bullet.x < this.x + this.w && bullet.y > this.y && bullet.y < this.y + this.h) {
         this.hp -= player.dmg;
         bullet.active = false;
-        player.points += 10;
+        player.points += 15;
       }
     })
     if (this.x > player.x - 5 && this.x < player.x + player.w + 5 && this.y > player.y - 5 && this.y < player.y + player.h + 5) {
       player.hp -= 1;
       this.active = false;
-      player.points -= 100;
+      player.points -= 50;
+      jump(true);
     }
     if (this.x + this.w > player.x - 5 && this.x + this.w < player.x + player.w + 5 && this.y + this.h > player.y - 5 && this.y + this.h < player.y + player.h + 5) {
       player.hp -= 1;
       this.active = false;
+      player.points -= 50;
+      jump(true);
     }
     if (this.hp <= 0) {
       this.active = false;
@@ -155,23 +184,53 @@ const buy = (stat, statIncrease, price) => {
   stat += statIncrease;
   player.points -= price;
 }
-function platform(x, y, w, h, color) {
+function platform(x, y, w, h) {
   this.x = x;
   this.y = y;
   this.w = w;
   this.h = h;
-  this.color = color;
   this.draw = () => {
-    ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.w, this.h)
     ctx.strokeRect(this.x, this.y, this.w, this.h)
   }
   this.update = () => {
-    if (player.y + player.h > this.y - 5 && player.y + player.h < this.y) {
+    /*if (player.y + player.h > this.y - 2 && player.y + player.h < this.y + 7 && player.x < this.x + this.w && player.x + player.w > this.x) {
+      player.onGround = true;
+    } else if (player.y + player.h > 550) {
+      player.onGround = true;
+    }
+    */
+    if (player.y + player.h < this.y + this.h && player.y + player.h + player.dy > this.y && player.x < this.x + this.w && player.x + player.w > this.x) {
+      player.dy = 0;
       player.onGround = true;
     }
   }
 }
 const ground = [];
-ground.push(new platform(0, 550, 600, 50, 'brown'))
+ground.push(new platform(0, 545, 600, 5))
+ground.push(new platform(200, 400, 200, 4))
+ground.push(new platform(0, 472.5, 200, 4))
+ground.push(new platform(400, 472.5, 200, 4))
+
+
+const spawn = () => {
+  player.points = 50;
+  player.maxhp = 5;
+  player.hp = player.maxhp;
+  enemies = [];
+  player.x = 290;
+  player.y = 350;
+  player.atks = 1;
+  player.dmg = 2;
+  player.speed = 5;
+  player.maxJumps = 0;
+  player.jumps = player.maxJumps;
+  upgradeKeys["1"].price = 600
+  upgradeKeys["2"].price = 400
+  upgradeKeys["3"].price = 650
+  upgradeKeys["4"].price = 500
+  upgradeKeys["5"].price = 500
+  upgradeKeys["6"].price = 750
+  bullets.forEach(bullet => { bullet.active = false; })
+}
 setInterval(() => { update(); draw(); }, 1000 / 60);
